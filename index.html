@@ -1,0 +1,105 @@
+<!-- 
+  This program runs in a browser, which imposes a performance limitation. 
+  Processing more than eight characters may cause the application to hang! 
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Генератор комбинаций</title>
+  </head>
+  <style>
+    #appContainer {
+      max-width: 600px; 
+      margin: 20px auto;
+      padding: 20px;
+    }
+
+    #outputBlock {
+      max-height: calc(100vh - 50px);
+      overflow-y: scroll;
+      padding: 10px;
+    }
+
+    #combinationsList {
+      border: 1px solid #ddd;
+      padding: 10px;
+      list-style-type: none;
+    }
+
+    #combinationCount {
+      position: sticky;
+      bottom: 0;
+      background-color: white;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="appContainer">
+    <form id="inputForm">
+      <label for="inputField">Введите символы:</label>
+      <input type="text" id="inputField" onkeydown="checkEnter(event)" required />
+      <button type="button" onclick="generateCombinations()">
+        Генерировать комбинации
+      </button>
+    </form>
+    <p>Варианты комбинаций:</p>
+    <div id="outputBlock">
+     
+      <ul id="combinationsList"></ul>
+    </div>
+
+    <p id="combinationCount">Количество комбинаций: 0</p>
+  </div>
+
+    <script>
+      function checkEnter(event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          generateCombinations();
+        }
+      }
+
+      function generateCombinations() {
+        const inputString = document.getElementById("inputField").value;
+
+        const outputBlock = document.getElementById("combinationsList");
+        outputBlock.innerHTML = "";
+        const countElement = document.getElementById("combinationCount");
+
+        const combinations = getCombinations(inputString);
+
+        combinations.forEach(function (combination, index) {
+          const listItem = document.createElement("li");
+          listItem.textContent = index + 1 + ". " + combination;
+          outputBlock.appendChild(listItem);
+        });
+        countElement.textContent =
+          "Количество комбинаций: " + combinations.length;
+      }
+
+      function getCombinations(str) {
+        const result = new Set();
+
+        function generate(prefix, remaining) {
+          if (remaining.length === 0) {
+            result.add(prefix);
+            return;
+          }
+
+          for (let i = 0; i < remaining.length; i++) {
+            const char = remaining[i];
+            const remainingSubstring =
+              remaining.slice(0, i) + remaining.slice(i + 1);
+            generate(prefix + char, remainingSubstring);
+          }
+        }
+
+        generate("", str);
+        return [...result];
+      }
+    </script>
+  </body>
+</html>
